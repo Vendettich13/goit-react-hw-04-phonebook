@@ -30,8 +30,8 @@ export function Form({onSubmit}) {
     e.preventDefault();
     const { name, number } = e.target.elements;
     onSubmit(name.value, number.value)
-    name.value = '';
-    number.value = '';
+       setName('');
+       setNumber('');
     }
         return <form onSubmit={handleSubmit} className={css.form}>
         <label htmlFor={contactsId}>
