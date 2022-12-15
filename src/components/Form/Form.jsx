@@ -1,46 +1,45 @@
-import { Component } from "react";
+import { useState } from "react";
 import { nanoid } from 'nanoid'
 import css from "../Form/Form.module.css"
 
 
-export class Form extends Component {
-    state = {
-        name: '',
-        number: ''
+export function Form({onSubmit}) {
+    const [name, setName] = useState('')
+    const [number, setNumber] = useState('')
+
+    const contactsId = nanoid();
+
+    const handleNameChange = (e) => {
+        const  name  = e.currentTarget.value;
+        setName(name)
+    }
+    const handleNumberChange = (e) => {
+        const  number  = e.currentTarget.value;
+        setNumber(number)
     }
 
-    contactsId = nanoid();
-
-    handleChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value })
-    }
-
-    handleSubmit = (e) => {
+   const handleSubmit = (e) => {
     e.preventDefault();
     const { name, number } = e.target.elements;
-    this.props.onSubmit(name.value, number.value)
+    onSubmit(name.value, number.value)
     name.value = '';
     number.value = '';
     }
-    
-    render() {
-        return <form onSubmit={this.handleSubmit} className={css.form}>
-        <label htmlFor={this.contactsId}>
+        return <form onSubmit={handleSubmit} className={css.form}>
+        <label htmlFor={contactsId}>
             <p>Name</p> <input
-        id={this.contactsId}
-        onChange={this.handleChange}
+        id={contactsId}
+        onChange={handleNumberChange}
         type="text"
         name="name"
         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
         required/> 
         </label>
-        <label htmlFor={this.contactsId}>
+        <label htmlFor={contactsId}>
             <p>Number</p> <input
-        id={this.contactsId}
-        onChange={this.handleChange}
+        id={contactsId}
+        onChange={handleNameChange}
         type="tel"
         name="number"
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
@@ -49,5 +48,5 @@ export class Form extends Component {
         </label>
         <button type="submit">Add contact</button>
       </form>
-    }
+    
 }

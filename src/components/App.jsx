@@ -1,56 +1,57 @@
-import { Component } from "react"
+import { useState } from "react"
 import { ContactList } from "./ContactList/ContactList";
 import { Form } from "./Form/Form";
 import { Filter } from "./Filter/Filter";
 import { nanoid } from 'nanoid'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
-export class App extends Component {
-  state = {
-  contacts: [{id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
+export function App() {
+  const [contacts, setContacts] = useState([{id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
     {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
     {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},],
-  filter: ''
+    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' }])
+  const [filter, setFilter] = useState('')
+
+ function changeFilter(e) {
+    const { value } = e.currentTarget.value;
+    setFilter(value)
   }
 
-  changeFilter = (e) => {
-    const { value } = e.currentTarget;
-    this.setState({filter: value})
+  function getFilteredContacts() {
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
   }
 
-  getFilteredContacts = () => {
-    const normalizedFilter = this.state.filter.toLowerCase();
-    return this.state.contacts.filter(contact => {
-     return contact.name.toLowerCase().includes(normalizedFilter)
-    })
-  }
-
-  handleSubmit = (name, number) => {
-    const isExist = this.state.contacts.find(contact => { return contact.name === name })
+  function handleSubmit(name, number) {
+    const isExist = contacts.find(contact => { return contact.name === name })
       if (isExist) {
-        return alert(`${name} is already in contacts.`)
-    }
-    this.setState(prevState => ({
-        contacts: [...prevState.contacts, { name, id: nanoid(), number }]
-      }))
-      this.setState({ name: '', number: '' })
+        return toast.warn(`${name} is already in contacts.`, {
+position: "top-right",
+autoClose: 4000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: "light",
+})
+      };
+    setContacts(prev => ([...prev, { name, id: nanoid(), number }]))
   }
 
-  deleteContact = (contactId) => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
-    }))
+  function deleteContact(contactId) {
+    setContacts(prev => (prev.filter(contact => contact.id !== contactId)))
   }
 
-  render() {
-    const filteredContacts = this.getFilteredContacts();
+
   return <div>
   <h1>Phonebook</h1>
-    <Form onSubmit={this.handleSubmit} />
+    <Form onSubmit={handleSubmit} />
+    <ToastContainer/>
   <h2>Contacts</h2>
-    <Filter value={this.state.filter} onChange={this.changeFilter} />
-    <ContactList contacts={filteredContacts} onDelete={this.deleteContact} />
+    <Filter value={filter} onChange={changeFilter} />
+    <ContactList contacts={getFilteredContacts()} onDelete={deleteContact} />
 </div>
-  } 
 };
